@@ -1,0 +1,40 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src &#x27;none&#x27;; img-src &#x27;self&#x27; data: file:; style-src &#x27;unsafe-inline&#x27;"><title>Goal-VLA让机器人先想终点</title><style>
+body{margin:0;background:#fff;color:#252623;font:17px/1.85 system-ui,"Noto Sans CJK SC",sans-serif}
+main{max-width:760px;margin:48px auto;padding:0 22px;overflow-wrap:anywhere}
+h1,h2,h3{line-height:1.4} h1{font-size:34px}h2{font-size:23px;margin-top:2.3em}
+h3{font-size:19px;margin-top:1.8em} a{color:#6b521f} p{margin:1.15em 0}
+figure{margin:28px 0 34px} img{width:100%;height:auto;display:block}
+figcaption{font-size:14px;line-height:1.65;color:#535853;margin-top:9px}
+blockquote{margin:1em 0;padding:0 1em;border-left:3px solid #b48c43}
+table{border-collapse:collapse;width:100%;font-size:14px} td,th{border-bottom:1px solid #ddd;padding:8px;text-align:left}
+.table-wrap{overflow-x:auto} .gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:16px}
+.gallery figure{margin:0} .gallery img{aspect-ratio:3/4}
+.card-proof{border-top:1px solid #bbb;padding-top:12px}
+.card-proof h2{margin-top:0}.card-proof p,.card-proof li,.card-proof td,.card-proof th{font-size:16px}
+.card-proof strong{color:#252623}.card-proof small{color:#535853}
+.card-proof figure{margin:16px 0}.card-proof img{aspect-ratio:auto}
+.proof-gallery{grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr))}
+.card-proof figcaption a{display:inline-block;padding:4px 0}
+.card-proof td:last-child{text-align:right;font-variant-numeric:tabular-nums}
+.brand-banner{display:block;width:100%;height:auto;max-height:176px;object-fit:cover;margin:0 auto 14px}
+.follow-line{text-align:center;color:#737875;font-size:15px;line-height:1.5;margin:6px 0 14px}
+.follow-line span{color:#2b76b8;font-weight:600}
+.wechat-account-card{display:flex;align-items:center;gap:12px;border:1px solid #d8e4ee;border-radius:8px;background:#f6faff;padding:12px 16px;margin:0 auto 26px;max-width:460px;color:#26343d}
+.wechat-account-card .mark{width:36px;height:36px;border-radius:50%;background:#2b76b8;color:#fff;display:grid;place-items:center;font-weight:700}
+.wechat-account-card small{display:block;color:#66747b;font-size:12px}
+@media(max-width:480px){main{margin-top:24px;padding:0 15px}h1{font-size:28px}}
+</style><meta name="jushengu-artifact-sha" content="a6af4eaa896364a8c4dd9e642294588ec8f5f0d516fcbb9b16604df56e0e087c">
+<style>
+.jushengu-articles {box-sizing:border-box;width:min(100%,980px);margin:18px auto 0;
+  padding:0 18px;font:15px/1.45 system-ui,sans-serif;color:#222}
+.jushengu-articles strong {display:block;margin-bottom:8px}
+.jushengu-articles ul {display:flex;flex-wrap:wrap;gap:3px 8px;list-style:none;
+  margin:0;padding:0;border-bottom:1px solid #d8d6d1}
+.jushengu-articles li {min-width:0;max-width:100%;margin:0;padding:0}
+.jushengu-articles a {display:block;box-sizing:border-box;padding:8px 12px;
+  overflow-wrap:anywhere;border-bottom:3px solid transparent;color:#48443c;text-decoration:none}
+.jushengu-articles a:hover {background:#f6f4ef}
+.jushengu-articles a[aria-current="page"] {border-color:#a47828;color:#222;font-weight:650}
+.jushengu-articles a:focus-visible {outline:2px solid #a47828;outline-offset:-2px}
+</style>
+</head><body><nav class="jushengu-articles" aria-label="小红书文章"><strong>具身谷 · 小红书</strong><ul><li><a href="goal-vla/index.html" aria-current="page">Goal-VLA让机器人先想终点</a></li></ul></nav><main><h1>Goal-VLA让机器人先想终点</h1><p>给机器人一句“把番茄放进锅里”，它得先确定哪个物体该动、最后该停在哪里，再决定夹爪怎么走。Goal-VLA 把这两个问题交给不同模块，中间用物体的三维位姿变化交接。</p><p>先看目标图。图像生成模型先画出任务完成后的场景。论文的番茄例子里，模型第一次连锅也挪了。系统把候选图中的番茄抠出来，半透明叠回真实的初始画面，评估模型就能参照原来的锅检查目标，并要求重画。图 3 展示了这次修正。</p><p>接着把画面变成能执行的几何目标。系统按语义特征匹配两幅图里的像素，用不动的背景把预测深度对齐到真实深度，再配准两组物体点云，求出旋转和平移。底层先筛选接触位姿，再施加物体变换以计算夹爪目标，最后规划无碰撞轨迹。换机器人时，接触与规划仍需符合新本体的约束。</p><p>整套系统在 RLBench 的八项仿真任务中平均成功率为 59.9%。真机四项任务每项十次，Goal-VLA 平均 60%，MolmoAct 为 27.5%。拆开看，番茄入锅成功九次，桌面清扫只成功四次。两组主实验都采用无任务专门微调的零样本协议。数据见论文表 II、III。</p><p>图 4 的消融围绕高层世界模型展开。提示增强与反思同时关闭时，图中平均分为 40.0%。两项开启、最多反思三次时为 88.8%。图中的评估口径交代有限，整套机器人操作的成功率见两张主结果表。</p><p>具身谷观点：这个分层接口也可以用来定位失败。先问目标图里的物体是否在正确位置，再看三维高度与朝向，最后检查接触和路径。论文中的称重与立瓶案例暴露了空间定位误差，清扫则暴露了目标生成问题。</p><p>#具身智能 #机器人操作 #视觉语言动作模型 #论文精读 #GoalVLA</p><div class="gallery"><figure><a href="goal-vla/assets/xhs/cards/card-01.png"><img src="goal-vla/assets/xhs/cards/card-01.png" alt="先想终点，再让机器人动"></a></figure><figure><a href="goal-vla/assets/xhs/cards/card-02.png"><img src="goal-vla/assets/xhs/cards/card-02.png" alt="一句指令，缺了哪层信息？"></a></figure><figure><a href="goal-vla/assets/xhs/cards/card-03.png"><img src="goal-vla/assets/xhs/cards/card-03.png" alt="生成目标图后，放回原场景检查"></a></figure><figure><a href="goal-vla/assets/xhs/cards/card-04.png"><img src="goal-vla/assets/xhs/cards/card-04.png" alt="从二维目标图算出夹爪位姿"></a></figure><figure><a href="goal-vla/assets/xhs/cards/card-05.png"><img src="goal-vla/assets/xhs/cards/card-05.png" alt="消融检验的是哪一层？"></a></figure><figure><a href="goal-vla/assets/xhs/cards/card-06.png"><img src="goal-vla/assets/xhs/cards/card-06.png" alt="真机零样本平均成功率 60%"></a></figure><figure><a href="goal-vla/assets/xhs/cards/card-07.png"><img src="goal-vla/assets/xhs/cards/card-07.png" alt="画对了，也可能放不准"></a></figure><figure><a href="goal-vla/assets/xhs/cards/card-08.png"><img src="goal-vla/assets/xhs/cards/card-08.png" alt="把失败定位到中间接口"></a></figure></div></main></body></html>
